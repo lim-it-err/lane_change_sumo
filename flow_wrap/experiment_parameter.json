@@ -1,0 +1,8 @@
+{
+  "HORIZON": 600,
+  "N_ROLLOUT" : 20,
+  "N_CPUS" : 2,
+  "FLOW_RATE": 2000,
+  "RL_PENETRATION" : 0.5,
+  "NUM_RL": 15
+}
