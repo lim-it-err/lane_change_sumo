@@ -1,6 +1,5 @@
 import errno
 
-import scenario
 from time import strftime
 from flow.utils.registry import env_constructor
 import json

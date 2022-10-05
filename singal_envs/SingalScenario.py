@@ -5,8 +5,8 @@ from flow.core.params import VehicleParams
 from flow.controllers import RLController, ContinuousRouter, \
     SimLaneChangeController
 
-from envs import SingalEnv
-from envs import SingalNetwork
+from singal_envs import SingalEnv
+from singal_envs import SingalNetwork
 
 # time horizon of a single rollout
 HORIZON = 1000
