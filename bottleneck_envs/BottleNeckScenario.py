@@ -4,12 +4,11 @@ Bottleneck in which the actions are specifying a desired velocity
 in a segment of space
 """
 from flow.core.params import SumoParams, EnvParams, InitialConfig, NetParams, \
-    InFlows, SumoCarFollowingParams, SumoLaneChangeParams
-from flow.core.params import TrafficLightParams
-from flow.core.params import VehicleParams
+    InFlows, SumoCarFollowingParams, SumoLaneChangeParams, TrafficLightParams, VehicleParams
 from flow.controllers import RLController, ContinuousRouter, \
     SimLaneChangeController
-from flow.envs import BottleneckDesiredVelocityEnv
+from flow.envs import BottleneckAccelEnv
+# from flow.envs import BottleneckDesiredVelocityEnv
 from flow.networks import BottleneckNetwork
 
 # time horizon of a single rollout
@@ -64,7 +63,8 @@ additional_env_params = {
     "lane_change_duration": 5,
     "max_accel": 3,
     "max_decel": 3,
-    "inflow_range": [1000, 2000]
+    "inflow_range": [1000, 2000],
+    "add_rl_if_exit": True
 }
 
 # flow rate
@@ -101,8 +101,8 @@ flow_params = dict(
     exp_tag="DesiredVelocity",
 
     # name of the flow environment the experiment is running on
-    env_name=BottleneckDesiredVelocityEnv,
-
+    # env_name=BottleneckDesiredVelocityEnv,
+    env_name=BottleneckAccelEnv,
     # name of the network class the experiment is running on
     network=BottleneckNetwork,
 
@@ -123,6 +123,7 @@ flow_params = dict(
         sims_per_step=1,
         horizon=HORIZON,
         additional_params=additional_env_params,
+
     ),
 
     # network-related parameters (see flow.core.params.NetParams and the

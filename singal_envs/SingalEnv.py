@@ -22,7 +22,7 @@ ADDITIONAL_ENV_PARAMS = {
 class SingalEnv(Env):
     def __init__(self, env_params, sim_params, network, simulator='traci'):
         for p in ADDITIONAL_ENV_PARAMS.keys():
-            if p not in env_params.additional_params:
+            if p  not in env_params.additional_params:
                 raise KeyError(
                     'Environment parameter "{}" not supplied'.format(p))
 

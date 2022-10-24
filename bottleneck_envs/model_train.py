@@ -9,8 +9,9 @@ from flow.utils.rllib import FlowParamsEncoder
 
 import BottleNeckScenario as scenario
 
+# self.rollout size has to be multiple of nminibatches, wherre nminibatches are mostly 4.
 class TrainBottleNeck():
-    def __init__(self, num_cpus=1, num_steps=5000, rollout_size=1000, save_path=None, exp_tag=None, multiagent=False):
+    def __init__(self, num_cpus=1, num_steps=5000, rollout_size=1000, save_path=None, exp_tag="BottleneckAccelEnv", multiagent=False):
         self.flow_params = scenario.flow_params
         if exp_tag is None:
             exp_tag = self.flow_params['exp_tag']
@@ -30,7 +31,7 @@ class TrainBottleNeck():
                                  for i in range(self.num_cpus)])
 
         train_model = PPO2('MlpPolicy', env, verbose=1, n_steps=self.rollout_size, nminibatches=10)
-        # self.rolloutsize has to be multiple of nminibatches
+
         train_model.learn(total_timesteps=self.num_steps)
         if save:
             TrainBottleNeck.save_model(train_model, self.save_path, self.exp_tag, self.flow_params)

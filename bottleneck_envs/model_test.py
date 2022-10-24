@@ -3,7 +3,7 @@ from stable_baselines import PPO2, SAC
 from flow.utils.rllib import get_flow_params
 from flow.utils.registry import env_constructor
 
-class TestSingalJC():
+class TestBottleNeck():
     def __init__(self, algorithm, model_path, param_path, render=True):
         #FIXME: Allow multiple algorithm
         self.model = PPO2.load(model_path)
@@ -20,11 +20,9 @@ class TestSingalJC():
             reward += rewards
         print('the final reward is {}'.format(reward))
 
-    def __del__(self):
-        pass
 
 if __name__ == "__main__":
     model_path = "/home/ubuntu/baseline_results/DesiredVelocity/2022-10-02-19:38:22.zip"
     param_path = "/home/ubuntu/baseline_results/DesiredVelocity/2022-10-02-19:38:22.json"
 
-    test = TestSingalJC(PPO2, model_path, param_path).test()
+    test = TestBottleNeck(PPO2, model_path, param_path).test()
