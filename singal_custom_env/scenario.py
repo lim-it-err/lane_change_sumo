@@ -35,6 +35,14 @@ vehicles.add(
         speed_mode="aggressive",
     ),
     num_vehicles=0)
+# vehicles.add(
+#     veh_id="rl_truck",
+#     acceleration_controller=(RLController, {}),
+#     car_following_params=SumoCarFollowingParams(
+#         speed_mode="aggressive",
+#     ),
+#     num_vehicles=0)
+
 
 
 
@@ -90,7 +98,7 @@ flow_params = dict(
         sims_per_step=5,
         warmup_steps=0,
         additional_params={
-            "max_accel": 1.5,
+            "max_accel": 1,
             "max_decel": 1.5,
             "target_velocity": 20,
             "num_rl": NUM_RL,

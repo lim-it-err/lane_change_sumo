@@ -8,7 +8,6 @@ from flow.core.params import SumoParams, EnvParams, InitialConfig, NetParams, \
 from flow.controllers import RLController, ContinuousRouter, \
     SimLaneChangeController
 from flow.envs import BottleneckAccelEnv
-# from flow.envs import BottleneckDesiredVelocityEnv
 from flow.networks import BottleneckNetwork
 
 # time horizon of a single rollout

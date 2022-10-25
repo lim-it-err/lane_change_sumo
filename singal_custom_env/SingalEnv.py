@@ -33,17 +33,12 @@ class SingalEnv(Env):
                 raise KeyError(
                     'Environment parameter "{}" not supplied'.format(p))
 
-        # maximum number of controlled vehicles
         self.num_rl = env_params.additional_params["num_rl"]
 
-        # queue of rl vehicles waiting to be controlled
         self.rl_queue = collections.deque()
 
-        # names of the rl vehicles controlled at any step
         self.rl_veh = []
 
-        # used for visualization: the vehicles behind and after RL vehicles
-        # (ie the observed vehicles) will have a different color
         self.leader = []
         self.follower = []
 
@@ -60,19 +55,15 @@ class SingalEnv(Env):
 
     @property
     def observation_space(self):
-        """See class definition."""
         return Box(low=0, high=1, shape=(5 * self.num_rl, ), dtype=np.float32)
 
     def _apply_rl_actions(self, rl_actions):
-        """See class definition."""
         for i, rl_id in enumerate(self.rl_veh):
-            # ignore rl vehicles outside the network
             if rl_id not in self.k.vehicle.get_rl_ids():
                 continue
             self.k.vehicle.apply_lane_change(rl_id, int(rl_actions[i]))
 
     def get_state(self, rl_id=None, **kwargs):
-        """See class definition."""
         self.leader = []
         self.follower = []
 
@@ -115,33 +106,51 @@ class SingalEnv(Env):
         return observation
 
     def compute_reward(self, rl_actions, **kwargs):
-        """See class definition."""
+        # """See class definition."""
+        # if self.env_params.evaluate:
+        #     return np.mean(self.k.vehicle.get_speed(self.k.vehicle.get_ids()))
+        # else:
+        #     # return a reward of 0 if a collision occurred
+        #     if kwargs["fail"]:
+        #         return 0
+
+        #     # reward high system-level velocities
+            # cost1 = rewards.desired_velocity(self, fail=kwargs["fail"])
+
+        #     # penalize small time headways
+        #     cost2 = 0
+        #     t_min = 1  # smallest acceptable time headway
+        #     for rl_id in self.rl_veh:
+        #         lead_id = self.k.vehicle.get_leader(rl_id)
+        #         if lead_id not in ["", None] \
+        #                 and self.k.vehicle.get_speed(rl_id) > 0:
+        #             t_headway = max(
+        #                 self.k.vehicle.get_headway(rl_id) /
+        #                 self.k.vehicle.get_speed(rl_id), 0)
+        #             cost2 += min((t_headway - t_min) / t_min, 0)
+
+        #     # weights for cost1, cost2, and cost3, respectively
+        #     eta1, eta2 = 1.00, 0.10
+
+        #     return max(eta1 * cost1 + eta2 * cost2, 0)
+        delayed_sum = 0
+        for rl_id in self.rl_veh:
+            delayed_sum += rewards.avg_delay_specified_vehicles(self, rl_id)
+
         if self.env_params.evaluate:
+            with open("result_log.txt", "w") as f:
+                f.write(rewards.average_velocity(), delayed_sum)
             return np.mean(self.k.vehicle.get_speed(self.k.vehicle.get_ids()))
-        else:
-            # return a reward of 0 if a collision occurred
-            if kwargs["fail"]:
-                return 0
 
-            # reward high system-level velocities
-            cost1 = rewards.desired_velocity(self, fail=kwargs["fail"])
+        avg_velocity = rewards.average_velocity(self)
+        reward_for_minimizing_delay = rewards.min_delay(self)
+        standstill = rewards.penalize_standstill(self)
+        weighted_reward =  avg_velocity*10 - delayed_sum/10+reward_for_minimizing_delay*10+standstill*10
+        
+        print(avg_velocity, delayed_sum, reward_for_minimizing_delay, standstill)
+        print("weighted reward",weighted_reward)
 
-            # penalize small time headways
-            cost2 = 0
-            t_min = 1  # smallest acceptable time headway
-            for rl_id in self.rl_veh:
-                lead_id = self.k.vehicle.get_leader(rl_id)
-                if lead_id not in ["", None] \
-                        and self.k.vehicle.get_speed(rl_id) > 0:
-                    t_headway = max(
-                        self.k.vehicle.get_headway(rl_id) /
-                        self.k.vehicle.get_speed(rl_id), 0)
-                    cost2 += min((t_headway - t_min) / t_min, 0)
-
-            # weights for cost1, cost2, and cost3, respectively
-            eta1, eta2 = 1.00, 0.10
-
-            return max(eta1 * cost1 + eta2 * cost2, 0)
+        return weighted_reward
 
     def additional_command(self):
         """See parent class.

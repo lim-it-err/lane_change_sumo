@@ -189,7 +189,7 @@ class SingalNetwork(Network):
         edgestarts = [("inflow_highway", 0), ("left", INFLOW_EDGE_LEN + 0.1),
                       ("center", INFLOW_EDGE_LEN + premerge + 22.6),
                       ("inflow_merge_east",
-                       INFLOW_EDGE_LEN + premerge + postmerge + 22.6),
+                       INFLOW_EDGE_LEN + premerge + postmerge + 30),
                        ("inflow_merge_west",
                        INFLOW_EDGE_LEN + premerge + postmerge + 22.6),
                       ("bottom",
